@@ -1,0 +1,154 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsfonts, amsthm, graphicx, geometry, lipsum}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{biblatex}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage[bottom]{footmisc}
+
+\addbibresource{main.bib}
+
+\renewcommand{\contentsname}{Sadržaj}
+
+\makeatletter
+\renewcommand{\ALG@name}{Algoritam}
+\makeatother
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=red,
+    pdftitle={k-LCS RI},
+}
+
+\title{%
+    Longest common subsequence korišćenjem Genetskog algoritma \\~\\
+    \large Projekat iz Računarske inteligencije \\
+    Matematički fakultet \\
+    Univerzitet u Beogradu
+}
+\author{
+    Pavle Cvejović\\
+    \href{mailto:mi18024@alas.matf.bg.ac.rs}{mi18024@alas.matf.bg.ac.rs} \\
+    Viktor Novaković\\
+    \href{mailto:mi18096@alas.matf.bg.ac.rs}{mi18096@alas.matf.bg.ac.rs} \\
+}
+
+\date{Septembar 2022}
+
+\begin{document}
+
+    \renewcommand{\abstractname}{Apstrakt}
+
+    \maketitle
+
+    \begin{abstract}
+        Algoritmi na sekvencama\footnote{Koristimo termin \emph{sekvenca} a ne \emph{niska} jer se ovaj problem odnosi na nizove proizvoljnih tipova i ne koristimo termin \emph{niz} jer će se on upotrebljavati u drugom kontekstu}  simbola su izučavani duže vreme i sada formiraju fundamentalni deo računarskih nauka. Jedan od veoma bitnih problema u analiziranju sekvenci je problem pronalaženja najduže zajedničke podsekvence. U generalnom slučaju, kada imamo proizvoljan broj ulaznih sekvenci, ovaj problem je NP-težak \cite{np}. Ovde opisujemo pristup za rešenje ovog problema baziran na genetskom algoritmu.
+    \end{abstract}
+
+    \pagebreak
+
+    \tableofcontents
+
+    \pagebreak
+
+
+    \section{Uvod}
+    Problem pronalaženja najduže zajedničke podsekvence skupa od $k$ sekvenci ($k$-Longest Common Subsequence, $k$-LCS) je jedan od najizučavanijih problema u računarskim naukama u posednjih 30-ak godina jer igra bitnu ulogu u poredjenju sekvenci podataka. Ima potencijalne primene u mnogim područijima. Ovaj problem je koristan u prepoznavanju uzoraka, obradi i kompresiji teksta i podataka \cite{dc} i molekularnoj biologiji \cite{cg}. Može se posmatrati kao \emph{mera bliskosti} $k$ sekvenci jer se sastoji iz pronalaženja najvećeg broja identičnih elemenata svih $k$ sekvenci ali takvih da je bitno uredjenje tih elemenata. Na primer, poredjenje $k$ DNK sekvenci da se vidi njihovo podudaranje ili traženje reči u rečniku blizu pogrešno napisane reči u aplikacijama koje proveravaju pravopis.
+
+
+    \section{Opis problema}
+
+    Ako imamo dve sekvence $S$ i $T$ na nekoj fiksnoj azbuci $\Sigma$, sekvenca $T$ je \emph{podsekvenca} od $S$ ukoliko se $T$ može dobiti iz $S$ brisanjem nekih elemenata iz $S$. Primetimo da uredjenje preostalih elemenata u $S$ mora biti očuvano. Dužina sekvence $S$ je broj elemenata u njoj i zapisuje se sa $|S|$. Radi jednostavnosti, sa $S[i]$ ćemo obeležavati $i$-ti element u sekvenci $S$, a sa $S[i,j]$ podsekvencu od $S$ koja se sastoji od $i$-tog do $j$-tog elementa iz $S$. \\
+
+    {\large Problem}: Ako su nam date sekvence $S_i, 1 \leq i \leq k$, na nekoj fiksnoj azbuci $\Sigma$, pronadji sekvencu $T$ koja je podsekvenca $S_i$ za svako $i \in \{1,2,...,k\}$
+
+
+    \section{Brute force algoritam}
+
+    \subsection{Implementacija}
+    Za implementaciju \emph{brute force} algoritma koristili smo tehniku dinamičkog programiranja pronalaženja LCS od k nizova. Prvo, podsetimo se kako izgleda funkcija koja prima kao argumente dužine ($n_1, n_2$) 2 niza ($a_1,a_2$) i računa dužinu njihovog LCS:
+    $$ f(n_1, n_2) =
+    \begin{cases}
+        0 & \text{ako } n_1 = 0 \lor n_2 = 0 \\
+        f(n_1-1,n_2-1)+1 & \text{ako } a_1[n_1 - 1] = a_2[n_2 - 1] \\
+        \max{(f(n_1-1,n_2), f(n_1,n_2-1))} & \text{inače}
+    \end{cases}
+    $$
+    Ukoliko bi želeli da generalizujemo ovu funkciju za $k$ nizova $a_1,a_2,...,a_k$ sa dužinama $n_1, n_2,...n_k$ dobili bi smo sledeću rekurzivnu formulu:
+    $$ f(n_1, n_2, ...,n_k) =
+    \begin{cases}
+        0, \hspace{1em}  \text{ako je } n_1 = 0 \lor n_2 = 0 \lor \cdots \lor n_k = 0 \\
+        f(n_1-1,n_2-1,...,n_k-1)+1, \hspace{1em} \text{ako je } a_1[n_1 - 1] = a_2[n_2 - 1] = \cdots = a_k[n_k-1] \\
+        \max{(f(n_1-1,n_2,...,n_k), f(n_1,n_2-1,...,n_k), ..., f(n_1,n_2,...,n_k-1)}, \hspace{1em} \text{inače}
+    \end{cases}
+    $$
+
+    \vspace{7em}
+
+    Dalje, kreirajmo $k$-dimenzioni niz gde je svaki od nizova iste duzine kao odgovarajuća sekvenca (i inicijalizujmo ih tako da su im svi elementi 0) koji će nam koristiti kao DP tablica za enumeraciju svih sekvenci za računanje puta od LCS. Korišćenjem prethodne formule, možemo jednostavno da izvučemo formulu i za formiranje DP tablice koja će nam pomoći u rekonstrukciji LCS:
+
+    \begin{algorithm}
+        \caption{Formiranje DP tablice}
+        \hspace*{\algorithmicindent} \textbf{Ulaz: niz sekvenci $a_1,a_2,...,a_k$ i njihovih dužina $n_1, n_2,...n_k$} \\
+        \hspace*{\algorithmicindent} \textbf{Izlaz: formirana $k$-dimenziona DP tablica}
+        \begin{algorithmic}
+            \State \texttt{DP} $\gets \mathbf{0}_{n_1 \times n_2 \times \cdots \times n_k}$
+            \For{$(i_1,i_2,...,i_k),(el_1,el_2,...,el_k)$ \texttt{in} \text{enumerate}$(a_1 \times a_2 \times \cdots \times a_k)$}
+                \If{$el_1 = el_2 = \cdots = el_k$}
+                    \State $DP[i_1, i_2, ... , i_k] \gets DP[i_1-1, i_2-1, ... , i_k-1] + 1$
+                \Else
+                    \State $DP[i_1, i_2, ... , i_k] \gets \max{(DP[i_1-1, i_2, ... , i_k], DP[i_1, i_2-1, ... , i_k], ..., DP[i_1, i_2, ... , i_k-1])}$
+                \EndIf
+            \EndFor \\
+            \Return \texttt{DP}
+        \end{algorithmic}
+    \end{algorithm}
+
+    Sada možemo ići "unazad" kroz DP tablicu da rekonstruišemo LCS tako što kada god nadjemo pogodak u tablici nadovežemo element iz bilo koje sekvence (koristeći bilo koji indeks) na rezultujuću podniz:
+
+    \begin{algorithm}
+        \caption{Formiranje LCS}
+        \hspace*{\algorithmicindent} \textbf{Ulaz: $k$-dimenziona tablica DP, niz sekvenci $a_1,a_2,...,a_k$ i njihovih dužina $n_1, n_2,...n_k$} \\
+        \hspace*{\algorithmicindent} \textbf{Izlaz: LCS ulaznih sekvenci}
+        \begin{algorithmic}
+            \State \texttt{lcs} $\gets$ \texttt{[]}
+            \While{$n_i > 0 \hspace{0.5em} (\forall i \in \{1,..,k\})$}
+                \State \texttt{step} $\gets DP[n_1, n_2, ..., n_k]$
+                \If{$(\exists i \in \{1,...,k\}) \texttt{ step} = DP[n_1, n_2, ...,n_i-1,..., n_k]$}
+                    \State $n_i \gets n_i-1$
+                \Else
+                    \State \texttt{lcs.append($a_1[n_1 - 1]$)}
+                    \State $n_i \gets n_i - 1  \hspace{0.5em} (\forall i \in \{1,..,k\})$
+                \EndIf
+            \EndWhile \\
+            \Return \texttt{lcs}
+        \end{algorithmic}
+    \end{algorithm}
+
+
+    \section{Genetski algoritam}
+
+    \subsection{Uopšteno}
+
+    \subsection{Fitnes funkcija}
+
+    \subsection{Implementacija}
+
+
+    \section{Testiranje i rezultati}
+
+    \subsection{Brute force}
+
+    \subsection{Genetski}
+
+
+    \section{Zaključak}
+
+    \printbibliography[heading=bibintoc,title={Literatura}]
+
+
+\end{document}
