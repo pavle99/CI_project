@@ -26,17 +26,10 @@ def is_subsequence(needle: str, haystack: str):
     return all(x in it for x in needle)
 
 
-class ChromosomeParams:
-    def __init__(self, m: int = 5, n: int = 50, alphabet: str = string.ascii_lowercase):
-        self.m = m
-        self.n = n
-        self.alphabet = alphabet
-
-
 class GAParams:
     def __init__(self, generation_size: int = 100, chromosome_size: int = 50, tournament_size: int = 10,
                  reproduction_size: int = 10, mutation_rate: float = 0.1, crossover_rate: float = 0.7,
-                 selection_function: str = "tournament_selection", brute_force_len: int = None):
+                 selection_function: str = "tournament_selection", brute_force_len: int = -1):
         self.generation_size = generation_size
         self.chromosome_size = chromosome_size
         self.tournament_size = tournament_size
@@ -72,7 +65,7 @@ class Problem:
         Problem.first_sequence = self.sequences[0]
         self.n = len(Problem.first_sequence)
         self.m = len(self.sequences)
-        self.brute_force_len = None
+        self.brute_force_len = -1
 
     def calc_k_s(self, str_genetic_code: str):
         k_s = int(0)
@@ -105,7 +98,7 @@ class Problem:
         return fitness
 
     def best_fit(self, chromosome: Chromosome):
-        if self.brute_force_len is not None:
+        if self.brute_force_len != -1 and chromosome.fitness > 0:
             return len(from_genetic_code_to_string(chromosome.genetic_code)) == self.brute_force_len
         return False
 
@@ -135,8 +128,8 @@ class GeneticAlgorithm:
         return result
 
     def roulette_selection(self, population: list[Chromosome]) -> Chromosome:
-        # TODO: errors when negative fitness
-        result = random.choices(population, weights=[x.fitness for x in population], k=1)
+        min_fitness = min(population).fitness - 1
+        result = random.choices(population, weights=[x.fitness - min_fitness for x in population], k=1)
         return result[0]
 
     def tournament_selection(self, population: list[Chromosome]) -> Chromosome:
@@ -145,7 +138,7 @@ class GeneticAlgorithm:
         return result
 
     def selection(self, population: list[Chromosome]) -> list[Chromosome]:
-        result = [self.selection_function(population) for _ in range(self.reproduction_size)]
+        result = [self.selection_function(population) for _ in range(self.generation_size)]
         return result
 
     def crossover(self, parent1: Chromosome, parent2: Chromosome):
@@ -170,6 +163,7 @@ class GeneticAlgorithm:
             random_indices = random.sample(range(len(genetic_code)), max(amount_of_mutations // 5, 1))
             for random_index in random_indices:
                 genetic_code[random_index] = not genetic_code[random_index]
+
         return genetic_code
 
     def create_generation(self, selected: list[Chromosome]):
@@ -204,7 +198,7 @@ class GeneticAlgorithm:
             population = old_generation + self.create_generation(selected)
 
             current_best = max(population, key=lambda x: x.fitness)
-            print(current_best)
+            # print(current_best)
 
             if global_best.fitness < current_best.fitness:
                 global_best = current_best
