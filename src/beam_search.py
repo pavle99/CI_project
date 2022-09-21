@@ -13,7 +13,7 @@ class Node:
             str(self.l) + "\nsequence: " + self.sequence
 
 class Beam:
-    algorithms = ['POW', 'H', 'HBLUM']
+    algorithms = ['POW', 'H']
 
     def __init__(self, S, alphabet, algorithm):
         self.S = S
@@ -25,7 +25,7 @@ class Beam:
             return
         self.algorithm = algorithm
         self.best = ""
-        if algorithm in ['HBLUM', 'H']:
+        if algorithm == 'H':
             self.probability_matrix = self.calculate_probability_matrix()
         self.a = 1
         self.b = 1
@@ -200,15 +200,10 @@ class Beam:
                     self.best = v.sequence
 
             if len(extended_nodes) > 0:
-                if self.algorithm == 'HBLUM':
-                    extended_nodes = self.prune(extended_nodes, self.blum_upper_bound, extended_nodes[0].l - W)
-                elif self.algorithm in ['POW', 'H']:
-                    extended_nodes = self.filter_k(extended_nodes, max(k_best, 1))
+                extended_nodes = self.filter_k(extended_nodes, max(k_best, 1))
 
 
             B = extended_nodes[:beta]  # reduce
-
-        
 
         return self.best
 

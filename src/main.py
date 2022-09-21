@@ -20,9 +20,8 @@ class ChromosomeParams:
 
 """
     Beam(strings, alphabet, algorithm)
-    algorithm can be one of ['HBLUM', 'POW', 'H']
+    algorithm can be one of ['POW', 'H']
 
-    Not recommended to use HBLUM
     POW - faster but lower quality
     H - a bit slower but higher quality
 
