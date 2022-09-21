@@ -4,7 +4,8 @@ import string
 import time
 
 from brute_force import find_lcs
-from genetic import Problem, GeneticAlgorithm, GAParams
+from genetic import Problem, GeneticAlgorithm, GAParams, is_subsequence
+from beam_search import Beam
 
 
 def get_random_string(n: int, alphabet: string):
@@ -17,7 +18,22 @@ class ChromosomeParams:
         self.n = n
         self.alphabet = alphabet
 
+"""
+    Beam(strings, alphabet, algorithm)
+    algorithm can be one of ['HBLUM', 'POW', 'H']
 
+    Not recommended to use HBLUM
+    POW - faster but lower quality
+    H - a bit slower but higher quality
+
+    Example of use:
+    beam = Beam(random_strings, alphabet, 'H')
+    best = beam.search(1,1)
+
+    search arguments :
+        k_best - used if using POW or H, k_best > 0
+        beta > 0
+"""
 if __name__ == "__main__":
     ms = [2, 3, 5, 10, 20]
     ns = [10, 20, 50, 100, 200]
