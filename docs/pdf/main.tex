@@ -198,7 +198,7 @@
     \subsubsection{Funkcije za ocenjivanje čvorova}
     Fraser \cite{fr} je kao gornju granicu za broj karaktera koji mogu da se dodaju na parcijalno rešenje predstavljeno čvorom $v$, tj. dužinu LCS za potproblem $S[p^{L,v}]$ koristio $\textsc{UB}_{min}(v) = \textsc{UB}_{min}(S[p^{L,v}]) = min_{i={1,...,k}}(|S_i|-p_i^{L,v}+1)$ \newline
     \indent Za funkcije heuristike Mousavi i Tabataba \cite{mt, mt2} predlažu dva pristupa. Prvi pristup se zasniva na pretpostavci da su sekvence problema uniformno nasumično generisane i medjusobno nezavisne. Autori su izveli rekurziju koja odredjuje verovatnoću $\mathcal{P}(p, q)$ da će uniformno nasumična sekvenca dužine $p$ biti podsekvenca uniformno nasumične sekvence dužine $q$. Potrebne verovatnoće mogu da se izračunaju pri pretprocesiranju i čuvaju se u matrici. Koristeći fiksirano $t$, pod pretpostavkom da su sekvence problema nezavisne, svaki čvor se ocenjuje sa $\textsc{H}(v) = \textsc{H}(S[p^{L,v}]) = \prod_{i=1}^k\mathcal{P}(t, |S_i|-p_i^{L,v}+1)$. Ovo odgovara verovatnoći da parcijalno rešenje predstavljeno preko $v$ može da se produži za $t$ karaktera. Vrednost $t$ se heuristički odredjuje kao $t := max(1, \lfloor \frac{1}{|\Sigma|} \cdot min_{v \in V_{ext},i={1,...,k}}(|S_i|-p_i^{L,v}+1) \rfloor)$. Druga heuristička procena je takozvana \emph{power} heuristika:
-    $$ \textsc{Pow}(v) = \textsc{Pow}(S[p^{L,v}]) = \left(\prod_{i=1}^m(|S_i|-p_i^{L,v}+1)\right)^q\cdot \textsc{UB}_{min}(v), q \in [0,1).$$
+    $$ \textsc{Pow}(v) = \textsc{Pow}(S[p^{L,v}]) = \left(\prod_{i=1}^k(|S_i|-p_i^{L,v}+1)\right)^q\cdot \textsc{UB}_{min}(v), q \in [0,1).$$
     Gleda se kao generalizovani $\textsc{UB}_{min}$. Autori tvrde da bi trebalo da se uzme manja vrednost $q$ u slučaju većeg $k$ i postavljaju $q = a \times exp (-b\cdot k) + c$, gde su $a, b, c \geq 0$ zavisni od ulaznih parametara.
 
 
@@ -213,7 +213,7 @@
             \hline
             \multicolumn{3}{|c}{Params} & \multicolumn{2}{|c}{DP} & \multicolumn{2}{|c|}{GA} \\
             \hline
-            $|\Sigma|$ & $n$ & $m$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ \\
+            $|\Sigma|$ & $n$ & $k$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ \\
             \hline
             2          & 10  & 2   & 0.01   & 7          & 0.01   & 7          \\
             \hline
@@ -264,7 +264,7 @@
             \hline
             \multicolumn{3}{|c}{Params} & \multicolumn{2}{|c|}{BS-H} & \multicolumn{2}{|c|}{BS-Pow} & \multicolumn{2}{c|}{BS-H-Lit.} & \multicolumn{2}{c|}{BS-Pow-Lit.}\\
             \hline
-            $|\Sigma|$ & $\beta$ & $m$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ \\
+            $|\Sigma|$ & $\beta$ & $k$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ \\
             \hline
             4          & 50      & 20  & 0.18   & 181        & 0.17   & 173        & 0.04   & 189        & 0.10   & 191        \\
             \hline
