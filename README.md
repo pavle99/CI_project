@@ -1,4 +1,4 @@
-# Solving Longest Common Subsequence (LCS) problem using Genetic Algorithm approach
+# Solving Longest Common Subsequence (LCS) problem using Genetic and Beam search algorithm approaches
 
 Course: **Computational intelligence (CI)** <br>
 Language: **Serbian** <br>
