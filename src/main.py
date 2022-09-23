@@ -18,26 +18,8 @@ class ChromosomeParams:
         self.n = n
         self.alphabet = alphabet
 
-"""
-    Beam(strings, alphabet, algorithm)
-    algorithm can be one of ['POW', 'H']
 
-    POW - faster but lower quality
-    H - a bit slower but higher quality
-
-    Example of use:
-    beam = Beam(random_strings, alphabet, 'H')
-    best = beam.search(1,1)
-
-    search arguments :
-        k_best - used if using POW or H, k_best > 0
-        beta > 0
-"""
-if __name__ == "__main__":
-    ms = [2, 3, 5, 10, 20]
-    ns = [10, 20, 50, 100, 200]
-    alphabets = ['01', 'ACTG', string.ascii_lowercase]
-    chromosome_params_arr = [ChromosomeParams(m, n, alphabet) for m in ms for n in ns for alphabet in alphabets]
+def test_GA(chromosome_params_arr: list[ChromosomeParams]):
     results = []
     for chromosome_params in chromosome_params_arr:
         n = chromosome_params.n
@@ -69,5 +51,43 @@ if __name__ == "__main__":
                 "genetic_algorithm_time": genetic_algorithm_time
             })
             print(results[-1])
+    return results
 
-    json.dump(results, open("results.json", "w"))
+
+def test_BS(chromosome_params_arr: list[ChromosomeParams]):
+    results = []
+    algorithms = ['POW', 'H']
+    betas = [5, 20, 60]
+    for chromosome_params in chromosome_params_arr:
+        strs = []
+        for i in range(chromosome_params.m):
+            strs.append(get_random_string(chromosome_params.n, chromosome_params.alphabet))
+
+        for algorithm in algorithms:
+            for beta in betas:
+                beam = Beam(strs, chromosome_params.alphabet, algorithm)
+                start_time = time.time()
+                result = beam.search(50 if algorithm == 'H' else 100, beta)
+                beam_search_time = time.time() - start_time
+                results.append({
+                    "chromosome_params": chromosome_params.__dict__,
+                    "beam_search_time": beam_search_time,
+                    "result": str(result),
+                    "algorithm": algorithm,
+                    "beta": beta*10
+                })
+                print(results[-1])
+    return results
+
+
+if __name__ == "__main__":
+    ms = [10, 15, 20, 25, 40, 60, 80, 100, 150, 200]
+    ns = [20, 50, 100, 200, 600]
+    alphabets = ['ACTG', string.ascii_lowercase[:20]]
+    chromosome_params_arr = [ChromosomeParams(m, n, alphabet) for m in ms for n in ns for alphabet in alphabets]
+
+    results_GA = test_GA(chromosome_params_arr)
+    results_BS = test_BS(chromosome_params_arr)
+
+    json.dump(results_GA, open("GA_results.json", "w"))
+    json.dump(results_BS, open("BS_results.json", "w"))
