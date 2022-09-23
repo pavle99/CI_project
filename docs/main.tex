@@ -25,7 +25,7 @@
 }
 
 \title{%
-    Longest common subsequence korišćenjem Genetskog algoritma \\~\\
+    Longest common subsequence korišćenjem Genetskog i Beam search algoritma \\~\\
     \large Projekat iz Računarske inteligencije \\
     Matematički fakultet \\
     Univerzitet u Beogradu
@@ -34,7 +34,7 @@
     Pavle Cvejović\\
     \href{mailto:mi18024@alas.matf.bg.ac.rs}{mi18024@alas.matf.bg.ac.rs} \\
     Viktor Novaković\\
-    \href{mailto:mi18096@alas.matf.bg.ac.rs}{mi18096@alas.matf.bg.ac.rs} \\
+    \href{mailto:mi18092@alas.matf.bg.ac.rs}{mi18092@alas.matf.bg.ac.rs} \\
 }
 
 \date{Septembar 2022}
@@ -46,7 +46,7 @@
     \maketitle
 
     \begin{abstract}
-        Algoritmi na sekvencama\footnote{Koristimo termin \emph{sekvenca} a ne \emph{niska} jer se ovaj problem odnosi na nizove proizvoljnih tipova i ne koristimo termin \emph{niz} jer će se on upotrebljavati u drugom kontekstu}  simbola su izučavani duže vreme i sada formiraju fundamentalni deo računarskih nauka. Jedan od veoma bitnih problema u analiziranju sekvenci je problem pronalaženja najduže zajedničke podsekvence. U generalnom slučaju, kada imamo proizvoljan broj ulaznih sekvenci, ovaj problem je NP-težak \cite{np}. Ovde opisujemo pristup za rešenje ovog problema baziran na genetskom algoritmu.
+        Algoritmi na sekvencama\footnote{Koristimo termin \emph{sekvenca} a ne \emph{niska} jer se ovaj problem odnosi na nizove proizvoljnih tipova i ne koristimo termin \emph{niz} jer će se on upotrebljavati u drugom kontekstu}  simbola su izučavani duže vreme i sada formiraju fundamentalni deo računarskih nauka. Jedan od veoma bitnih problema u analiziranju sekvenci je problem pronalaženja najduže zajedničke podsekvence. U generalnom slučaju, kada imamo proizvoljan broj ulaznih sekvenci, ovaj problem je NP-težak \cite{np}. Ovde opisujemo dva pristupa za rešavanje ovog problema - jedan baziran na genetskom algoritmu a drugi na Beam search algoritmu.
     \end{abstract}
 
     \pagebreak
@@ -62,7 +62,7 @@
 
     \section{Opis problema}
 
-    Ako imamo dve sekvence $S$ i $T$ na nekoj fiksnoj azbuci $\Sigma$, sekvenca $T$ je \emph{podsekvenca} od $S$ ukoliko se $T$ može dobiti iz $S$ brisanjem nekih elemenata iz $S$. Primetimo da uredjenje preostalih elemenata u $S$ mora biti očuvano. Dužina sekvence $S$ je broj elemenata u njoj i zapisuje se sa $|S|$. Radi jednostavnosti, sa $S[i]$ ćemo obeležavati $i$-ti element u sekvenci $S$, a sa $S[i,j]$ podsekvencu od $S$ koja se sastoji od $i$-tog do $j$-tog elementa iz $S$. \\
+    Ako imamo dve sekvence $S$ i $T$ na nekoj fiksnoj azbuci $\Sigma$, sekvenca $T$ je \emph{podsekvenca} od $S$ ukoliko se $T$ može dobiti iz $S$ brisanjem nekih elemenata iz $S$. Primetimo da uredjenje preostalih elemenata u $S$ mora biti očuvano. Dužina sekvence $S$ je broj elemenata u njoj i zapisuje se sa $|S|$. Radi jednostavnosti, sa $S[i]$ ćemo obeležavati $i$-ti element u sekvenci $S$, a sa $S[i,j]$ podsekvencu od $S$ koja se sastoji od $i$-tog do $j$-tog elementa iz $S$. Praznu sekvencu obeležavamo sa $\epsilon$.\\
 
     {\large Problem}: Ako su nam date sekvence $S_i, 1 \leq i \leq k$, na nekoj fiksnoj azbuci $\Sigma$, pronadji sekvencu $T$ koja je podsekvenca $S_i$ za svako $i \in \{1,2,...,k\}$
 
@@ -70,7 +70,7 @@
     \section{Brute force algoritam}
 
     \subsection{Implementacija}
-    Za implementaciju \emph{brute force} algoritma koristili smo tehniku dinamičkog programiranja pronalaženja LCS od k nizova. Prvo, podsetimo se kako izgleda funkcija koja prima kao argumente dužine ($n_1, n_2$) 2 niza ($a_1,a_2$) i računa dužinu njihovog LCS:
+    Za implementaciju \emph{brute force} algoritma koristili smo tehniku \textbf{dinamičkog programiranja} pronalaženja LCS od k sekvenci. Prvo, podsetimo se kako izgleda funkcija koja prima kao argumente dužine ($n_1, n_2$) 2 sekvence ($a_1,a_2$) i računa dužinu njihovih LCS:
     $$ f(n_1, n_2) =
     \begin{cases}
         0 & \text{ako } n_1 = 0 \lor n_2 = 0 \\
@@ -78,7 +78,7 @@
         \max{(f(n_1-1,n_2), f(n_1,n_2-1))} & \text{inače}
     \end{cases}
     $$
-    Ukoliko bi želeli da generalizujemo ovu funkciju za $k$ nizova $a_1,a_2,...,a_k$ sa dužinama $n_1, n_2,...n_k$ dobili bi smo sledeću rekurzivnu formulu:
+    Ukoliko bi želeli da generalizujemo ovu funkciju za $k$ sekvenci $a_1,a_2,...,a_k$ sa dužinama $n_1, n_2,...n_k$ dobili bi smo sledeću rekurzivnu formulu:
     $$ f(n_1, n_2, ...,n_k) =
     \begin{cases}
         0, \hspace{1em}  \text{ako je } n_1 = 0 \lor n_2 = 0 \lor \cdots \lor n_k = 0 \\
@@ -108,7 +108,7 @@
         \end{algorithmic}
     \end{algorithm}
 
-    Sada možemo ići "unazad" kroz DP tablicu da rekonstruišemo LCS tako što kada god nadjemo pogodak u tablici nadovežemo element iz bilo koje sekvence (koristeći bilo koji indeks) na rezultujuću podniz:
+    Sada možemo ići "unazad" kroz DP tablicu da rekonstruišemo LCS tako što kada god nadjemo pogodak u tablici nadovežemo element iz bilo koje sekvence (koristeći bilo koji indeks) na rezultujuću podsekvencu:
 
     \begin{algorithm}
         \caption{Formiranje LCS}
@@ -129,24 +129,200 @@
         \end{algorithmic}
     \end{algorithm}
 
+    \pagebreak
+
 
     \section{Genetski algoritam}
 
     \subsection{Uopšteno}
+    Pri prvom pristupu problemu, odlučili smo da koristimo genetski algoritam. Kod generacijskog genetskog algoritma, incijalizujemo populaciju sa nasumičnim jedinkama, biramo jedinke roditelje, od njih kreiramo jedinke decu, i sa odredjenom šansom mutiramo dobijene jedinke. Cilj je da pri svakom odabiru roditelja, jedinke sa boljom ocenom imaju veće šanse da budu odabrane. Na ovaj način pokušavamo da imitiramo evoluciju u prirodi.
+
+    \subsection{Predstavljanje jedinki}
+    Pretpostavimo bez umanjenja opštosti da je sekvenca najmanje dužine na prvoj poziciji, \emph{i=1}. Tada svaku jedinku u genetskom algoritmu možemo predstaviti kao niz \emph{bulovskih} vrednosti dužine $|S_1|$. Sekvenca koju jedinka predstavlja je sastavljena od karaktera sekvence \emph{$S_1$} za koje u odgovarajućem elementu niza stoji vrednost \emph{Tačno}. Očigledno, ovakva jedinka može da predstavi sve moguće validne sekvence za naš problem.
 
     \subsection{Fitnes funkcija}
+    Ako uzmemo prethodnu pretpostavku, za sekvence $S_1, S_2,..., S_k \in \Sigma^*$ važi $|S_1| \leq |S_i|$ za svako $i \in {2,...,k}$. Neka je $n = |S_1|$ i neka za svaku jedinku $s \in \{0,1\}^n$ \emph{c(s)} bude kandidat za rešenje koji je predstavljen jedinkom $s$, i neka \emph{k(s)} bude broj sekvenci $S_1, S_2,..., S_k$ kojima je \emph{c(s)} podsekvenca.
+    Odlučili smo se da izaberemo fitnes funkciju iz rada \cite{ft} koju definišemo kao:
+    $$ f(s) =
+    \begin{cases}
+        3000(|c(s)| + 30k(s) + 50) & \text{ako } |c(s)| = n \land k(s) = k \\
+        3000(|c(s)| + 30k(s)) & \text{ako } |c(s)| < n \land k(s) = k \\
+        -1000(|c(s)| + 30k(s) + 50)(k - k(s)) & \text{ako } |c(s)| = n \land k(s) < k \\
+        -1000(|c(s)| + 30k(s))(k - k(s)) & \text{ako } |c(s)| < n \land k(s) < k \\
+    \end{cases}
+    $$
+
+    \subsection{Selekcija}
+    Za \emph{selekciju} smo koristili turnirsku i ruletsku selekciju raznih veličina. Najbolje se pokazala turnirska selekcija veličine 10. Nasumično se bira 10 jedinki i uzima se najbolja, tj. jedinka medju njima koja ima najveću vrednost fitnes funkcije.
+
+    \subsection{Ukrštanje, mutacija i elitizam}
+    Pokretali smo algoritam za veliki broj kombinacija parametera i tipova za ukrštanje, mutaciju i elitizam, i oni koji su se ispostavili da su najbolji iz empirijskih rezultata su \emph{uniformno} ukrštanje (svaki od gena deteta ima jednaku šansu da bude nasledjen od prvog roditelja kao od drugog), \emph{višestruka} mutacija sa verovatnoćom 0.05 (nasumično se bira broj mutiranih gena do 75\% dužine cele jedinke i negira im se vrednost), i elitizam koji cuva 20\% jedinki.
+
+    \subsection{Uslov zaustavljanja}
+    Program se zaustavlja ako se dostigne maksimalni broj iteracija (koje zavise od veličine sekvenci i broja sekvenci na ulazu), ili ako jedinka sa najboljim fitnesom ostane nepromenjena u prethodnih nekoliko generacija (ovaj broj takodje zavisi od veličine sekvenci i broja sekvenci na ulazu), ili ako je pronadjeno optimalno rešenje (ovo je samo u slučaju da je pre GA pokrenut i brute force algoritam sa kojim se može uporediti).
+
+
+    \section{Beam search algoritam}
+
+    \subsection{Uopšteno}
+    \emph{Beam search} algoritam se svodi na nepotpunu pretragu stabla u širinu. Skup čvorova, zvani \emph{beam}, se zadržava. Na početku, \emph{beam} sadrži samo koreni čvor. U svakoj iteraciji, čvorovi \emph{beam}-a se šire da bi se dobili njihovi potomci na narednom nivou. Od dobijenih potomaka, čuvaju se $\beta > 0$ sa najboljom ocenom heuristike.
+
+    \subsection{Graf stanja}
+    Neka \emph{n} bude maksimalna dužina sekvenci $S_i, i \in {1,...,k}$. \newline
+    \indent Neka je $p^L \in \mathbb{N}^k$ vektor prirodnih brojeva takav da važi $1 \leq p_i^L \leq |S_i|$, za $i = {1,...,k}$. Skup $S[p^L]$ definišemo kao $\{S_i[p_i^L, |S_i|] | i = {1,...,k} \}$. Skup $S[p^L]$ se sastoji od uzastopne podsekvence svakog od početnih sekvenca od pozicije iz $p^L$ do kraja. Vektor $p^L$ nazivamo levo-pozicioni vektor, i on predstavlja LCS potproblem na sekvencama $S[p^L]$. \newline
+    \indent Graf stanja LCS problema je usmereni aciklički graf \emph{G = (V, E)}, gde je čvor $v \in V$ predstavljen odgovarajućim levo-pozicionim vektorom $p^{L,v}$ i dužinom $l_v$ parcijalnog rešenja. Grana $a = (v_1, v_2) \in E$ sa labelom $l(a) \in \Sigma$ postoji ako je $l_{v_2}$ za jedan veće od $l_{v_1}$, i ako se od parcijalnog rešenja dobijenog dodavanjem karaktera $l(a)$ na parcijalno rešenje čvora $v_1$ dobija potproblem $S[p^{L,v_2}]$. Koreni čvor $r$ grafa stanja je originalni problem, koji se može zapisati kao prazno parcijalno rešenje, tj. $r = (({1,...,1}), 0)$, koje predstavlja praznu sekvencu $\epsilon$. Da bi se dobilo dete čvora $v \in V$, mora se prvo odrediti kojim je karakterima moguće produžiti $v$, tj. karakteri $a \in \Sigma$ koji se pojavljuju makar jednom u svakoj od sekvenci iz $S[p^{L,v}]$. Za svaki od karaktera $a$, neka je pozicija prvog pojavljivanja u $S_i[p_i^{L,v}, |S_i|]$ zapisana kao $p_{i,a}^{L,v}$. Novi čvor dobijen dodavanjem karaktera $a$ na parcijalno rešenje predstavljeno čvorom $v$ je onda $v' = (p^{L,v'}, l_v + 1)$, gde je $p_i^{L,v'} = p_{i,a}^{L,v} + 1$, za svako $i = {1,...,m}$. Listove ovako definisanog stabla nazivamo \emph{kompletnim} čvorovima.\newline
+    \indent Takodje uvodimo termin \emph{dominantnog} levo-pozicionog vektora. Levo-pozicioni vektor $p^{L,v_1}$ je \emph{dominantan} nad levo-pozicionim vektorom $p^{L,v_2}$ \textbf{akko} važi $p^{L,v_1}[i] < p^{L,v_2}[i], i = {1,...,k}$.
 
     \subsection{Implementacija}
+    Pre prikaza samog algoritma, potrebno je definisati funkcije koje ćemo definisati unutar njega.\newline
+    \indent ExtendAndEvaluate(B, h) generiše sve potomke svakog od čvorova $v \in B$, odredjuje svakom od potomaka vrednost heuristike $h$ i sortira ih neopadajuće po odgovarajućim $h$-$vrednostima$, dobijeni skup čvorova nazivamo $V_{ext}$. Filter($V_{ext}$, $k_{best}$) je jedan od opcionih koraka koji smo odlučili da koristimo. Filter briše sve čvorove iz $V_{ext}$ koji su dominirani od strane drugih čvorova iz $V_{ext}$, ali radi efikasnosti, ne proverava se za svaki od čvorova da li je dominantan nad datim čvorom, nego se za proveru uzimaju najboljih $k_{best}$ iz $V_{ext}$. Reduce($V_{ext}$, $\beta$) vraća novi \emph{beam} koji se sastoji od najbolje ocenjenih $\beta$ čvorova iz $V_{ext}$. Bitno je napomenuti i opcioni korak Prune($V_{ext}$, $ub_{prune}$) koji iz $V_{ext}$ briše sve čvorove $v \in V_{ext}$ za koje važi $l_v + ub_{prune} \leq |s_{lcs}|$, gde je $ub_{prune}$ funkcija koja računa gornju granicu broja karaktera koji mogu da se dodaju na trenutni čvor, a $|s_{lcs}|$ dužina trenutno najboljeg rešenja, ali, radi efikasnosti, odlučili smo da ne koristimo ovaj korak.
+
+    \begin{algorithm}
+        \caption{Beam Search}
+        \hspace*{\algorithmicindent} \textbf{Ulaz: skup sekvenci $S$ i odgovarajuća azbuka $\Sigma$, funkcija heuristike $h$ za ocenu čvorova, parametar $k_{best}$ za filtriranje, $\beta$ - veličina $beam$-a}\\
+        \hspace*{\algorithmicindent} \textbf{Izlaz: Ostvareno LCS rešenje}
+        \begin{algorithmic}
+            \State \texttt{$B$} $\gets$ \texttt{$\{r\}$}
+            \State \texttt{$s_{lcs}$} $\gets$ \texttt{$\epsilon$}
+            \While{$B \neq \emptyset $}
+                \do \\
+                \State \texttt{$V_{ext}$} $\gets$ ExtendAndEvaluate($B$, $h$)
+                \State ažuriranje $s_{lcs}$ ako je dostignut \emph{kompletan} čvor $v$ sa novim najvećim $l_v$
+                \State \texttt{$V_{ext}$} $\gets$ Filter($V_{ext}$, $k_{best}$)
+                \State \texttt{$B$} $\gets$ Reduce($V_{ext}$, $\beta$)
+            \EndWhile \\
+            \Return \texttt{$s_{lcs}$}
+        \end{algorithmic}
+    \end{algorithm}
+
+    \subsubsection{Funkcije za ocenjivanje čvorova}
+    Fraser \cite{fr} je kao gornju granicu za broj karaktera koji mogu da se dodaju na parcijalno rešenje predstavljeno čvorom $v$, tj. dužinu LCS za potproblem $S[p^{L,v}]$ koristio $\textsc{UB}_{min}(v) = \textsc{UB}_{min}(S[p^{L,v}]) = min_{i={1,...,k}}(|S_i|-p_i^{L,v}+1)$ \newline
+    \indent Za funkcije heuristike Mousavi i Tabataba \cite{mt, mt2} predlažu dva pristupa. Prvi pristup se zasniva na pretpostavci da su sekvence problema uniformno nasumično generisane i medjusobno nezavisne. Autori su izveli rekurziju koja odredjuje verovatnoću $\mathcal{P}(p, q)$ da će uniformno nasumična sekvenca dužine $p$ biti podsekvenca uniformno nasumične sekvence dužine $q$. Potrebne verovatnoće mogu da se izračunaju pri pretprocesiranju i čuvaju se u matrici. Koristeći fiksirano $t$, pod pretpostavkom da su sekvence problema nezavisne, svaki čvor se ocenjuje sa $\textsc{H}(v) = \textsc{H}(S[p^{L,v}]) = \prod_{i=1}^k\mathcal{P}(t, |S_i|-p_i^{L,v}+1)$. Ovo odgovara verovatnoći da parcijalno rešenje predstavljeno preko $v$ može da se produži za $t$ karaktera. Vrednost $t$ se heuristički odredjuje kao $t := max(1, \lfloor \frac{1}{|\Sigma|} \cdot min_{v \in V_{ext},i={1,...,k}}(|S_i|-p_i^{L,v}+1) \rfloor)$. Druga heuristička procena je takozvana \emph{power} heuristika:
+    $$ \textsc{Pow}(v) = \textsc{Pow}(S[p^{L,v}]) = \left(\prod_{i=1}^m(|S_i|-p_i^{L,v}+1)\right)^q\cdot \textsc{UB}_{min}(v), q \in [0,1).$$
+    Gleda se kao generalizovani $\textsc{UB}_{min}$. Autori tvrde da bi trebalo da se uzme manja vrednost $q$ u slučaju većeg $k$ i postavljaju $q = a \times exp (-b\cdot k) + c$, gde su $a, b, c \geq 0$ zavisni od ulaznih parametara.
 
 
     \section{Testiranje i rezultati}
-
-    \subsection{Brute force}
+    Oba algoritma su pokrenuta na računaru sa sledećim specifikacijama: CPU --- Amd Ryzen 5 1400x @ $4 \times 3.2GHz$, RAM --- 7836MiB,  OS --- Windows 10, python --- Python 3.10.6\footnote{Ime kolone u tabelama sa -Lit. u sufiksu se odnosi na rezultate odgovarajućeg algoritma iz literature, dok se $|\Sigma|$ odnosi na veličinu azbuke, $n$ na veličinu najduže sekvence, $m$ broj sekvenci, $t[s]$ na dužinu izvršavanja i $s_{best}$ na dužinu pronadjene LCS}.
 
     \subsection{Genetski}
+    Pokrenuli smo genetski algoritam da radi sa 108 različitih kombinacija parametara (generation\_size, chromosome\_size, tournament\_size, mutation\_rate, itd...) a prikazujemo rezultate GA dobijene kombinacijom parametara gorespomenutih u tekstu i uporedjujemo sa rezultatima izvršavanja brute force algoritma:
+
+    \begin{center}
+        \begin{tabular}{| c c c | c c | c c |}
+            \hline
+            \multicolumn{3}{|c}{Params} & \multicolumn{2}{|c}{DP} & \multicolumn{2}{|c|}{GA} \\
+            \hline
+            $|\Sigma|$ & $n$ & $m$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ \\
+            \hline
+            2          & 10  & 2   & 0.01   & 7          & 0.01   & 7          \\
+            \hline
+            2          & 20  & 2   & 0.01   & 15         & 0.08   & 15         \\
+            \hline
+            2          & 10  & 3   & 0.01   & 6          & 0.01   & 6          \\
+            \hline
+            2          & 20  & 3   & 0.02   & 12         & 0.1    & 12         \\
+            \hline
+            2          & 10  & 5   & 0.7    & 5          & 0.03   & 5          \\
+            \hline
+            2          & 20  & 5   & 21.9   & 11         & 0.13   & 11         \\
+            \hline
+            4          & 10  & 2   & 0.01   & 5          & 0.03   & 5          \\
+            \hline
+            4          & 20  & 2   & 0.01   & 11         & 0.15   & 10         \\
+            \hline
+            4          & 10  & 3   & 0.01   & 4          & 0.04   & 4          \\
+            \hline
+            4          & 20  & 3   & 0.03   & 8          & 0.29   & 7          \\
+            \hline
+            4          & 10  & 5   & 0.72   & 3          & 0.02   & 3          \\
+            \hline
+            4          & 20  & 5   & 23.6   & 7          & 0.2    & 7          \\
+            \hline
+            26         & 10  & 2   & 0.01   & 2          & 0.02   & 2          \\
+            \hline
+            26         & 20  & 2   & 0.01   & 5          & 0.09   & 4          \\
+            \hline
+            26         & 10  & 3   & 0.01   & 1          & 0.01   & 1          \\
+            \hline
+            26         & 20  & 3   & 0.03   & 2          & 0.05   & 2          \\
+            \hline
+            26         & 10  & 5   & 0.73   & 0          & 0.01   & 0          \\
+            \hline
+            26         & 20  & 5   & 22.8   & 1          & 0.02   & 1          \\
+            \hline
+        \end{tabular}
+    \end{center}
+
+    \pagebreak
+
+    \subsection{Beam search}
+    Pri testiranju pokazalo se da je heuristika $\textsc{Pow}$ brža, ali je zbog toga heuristika $\textsc{H}$ davala bolje rezultate. Za heuristiku $\textsc{H}$ vrednost za $k_{best}$ koja je uzeta je 50, a za $\textsc{Pow}$ je 100. Rezultate za fiksno $n=600$ smo poredili sa \cite{res}:
+
+    \begin{center}
+        \begin{tabular}{| c c c | c c | c c | c c | c c |}
+            \hline
+            \multicolumn{3}{|c}{Params} & \multicolumn{2}{|c|}{BS-H} & \multicolumn{2}{|c|}{BS-Pow} & \multicolumn{2}{c|}{BS-H-Lit.} & \multicolumn{2}{c|}{BS-Pow-Lit.}\\
+            \hline
+            $|\Sigma|$ & $\beta$ & $m$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ \\
+            \hline
+            4          & 50      & 20  & 0.18   & 181        & 0.17   & 173        & 0.04   & 189        & 0.10   & 191        \\
+            \hline
+            4          & 50      & 100 & 0.21   & 149        & 0.19   & 141        & 0.05   & 158        & 0.09   & 156        \\
+            \hline
+            4          & 50      & 150 & 0.25   & 147        & 0.21   & 142        & 0.06   & 151        & 0.10   & 150        \\
+            \hline
+            4          & 50      & 200 & 0.25   & 144        & 0.24   & 140        & 0.07   & 150        & 0.11   & 148        \\
+            \hline
+            4          & 200     & 20  & 0.51   & 186        & 0.42   & 180        & 0.19   & 191        & 0.29   & 191        \\
+            \hline
+            4          & 200     & 100 & 0.60   & 155        & 0.51   & 148        & 0.36   & 158        & 0.40   & 158        \\
+            \hline
+            4          & 200     & 150 & 0.59   & 151        & 0.49   & 143        & 0.26   & 151        & 0.34   & 151        \\
+            \hline
+            4          & 200     & 200 & 0.69   & 148        & 0.51   & 139        & 0.38   & 150        & 0.38   & 150        \\
+            \hline
+            4          & 600     & 20  & 1.31   & 192        & 1.28   & 185        & 0.71   & 192        & 1.20   & 191        \\
+            \hline
+            4          & 600     & 100 & 1.32   & 157        & 1.28   & 150        & 0.68   & 158        & 1.28   & 158        \\
+            \hline
+            4          & 600     & 150 & 1.45   & 151        & 1.37   & 143        & 1.05   & 152        & 1.43   & 152        \\
+            \hline
+            4          & 600     & 200 & 1.40   & 150        & 1.29   & 148        & 1.15   & 151        & 1.00   & 150        \\
+            \hline
+            20         & 50      & 20  & 0.11   & 42         & 0.09   & 36         & 0.08   & 46         & 0.14   & 46         \\
+            \hline
+            20         & 50      & 100 & 0.19   & 29         & 0.13   & 28         & 0.08   & 31         & 0.13   & 31         \\
+            \hline
+            20         & 50      & 150 & 0.20   & 28         & 0.12   & 24         & 0.11   & 29         & 0.13   & 29         \\
+            \hline
+            20         & 50      & 200 & 0.23   & 27         & 0.22   & 24         & 0.11   & 28         & 0.13   & 27         \\
+            \hline
+            20         & 200     & 20  & 0.65   & 44         & 0.56   & 39         & 0.45   & 47         & 0.50   & 47         \\
+            \hline
+            20         & 200     & 100 & 0.67   & 32         & 0.54   & 28         & 0.31   & 31         & 0.49   & 31         \\
+            \hline
+            20         & 200     & 150 & 0.88   & 30         & 0.46   & 26         & 0.46   & 29         & 0.41   & 29         \\
+            \hline
+            20         & 200     & 200 & 0.88   & 28         & 0.50   & 25         & 0.43   & 28         & 0.47   & 27         \\
+            \hline
+            20         & 600     & 20  & 1.83   & 45         & 1.66   & 40         & 1.48   & 48         & 1.71   & 47         \\
+            \hline
+            20         & 600     & 100 & 1.88   & 31         & 1.68   & 25         & 1.20   & 31         & 1.09   & 32         \\
+            \hline
+            20         & 600     & 150 & 1.94   & 29         & 1.68   & 25         & 1.29   & 29         & 1.66   & 29         \\
+            \hline
+            20         & 600     & 200 & 2.01   & 27         & 1.70   & 23         & 1.43   & 28         & 1.62   & 28         \\
+            \hline
+        \end{tabular}
+    \end{center}
 
 
     \section{Zaključak}
+
+    Na osnovu prethodnih analiza možemo zaključiti da Genetski algoritam uglavnom upadne u lokalni optimum iz koga se ne može izboriti čak ni kroz nekoliko hiljada generacija bez obzira na izbor parametara i tipova operatora dok Beam search algoritam daje bolja rešenja i to u kraćem vremenskom periodu. Takodje možemo primetiti kod Beam search algoritma da su rešenja "visokog kvaliteta" (sa većim parametrom $\beta$) samo ~10\% bolja a vreme izvršavanja je preko 100\% veće.
+
+    \pagebreak
 
     \printbibliography[heading=bibintoc,title={Literatura}]
 
