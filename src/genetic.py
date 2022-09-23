@@ -115,6 +115,7 @@ class GeneticAlgorithm:
         self.mutation_rate = ga_params.mutation_rate
         self.percent_mutated = 75
         self.max_iterations = 1000
+        self.elitism_size = self.generation_size // 5
         self.crossover_rate = ga_params.crossover_rate
         self.selection_function = self.tournament_selection if ga_params.selection_function == "tournament_selection" else self.roulette_selection
 
@@ -155,12 +156,8 @@ class GeneticAlgorithm:
         random_value = random.random()
         amount_of_mutations = random.randint(1, self.percent_mutated) * len(genetic_code) // 100
 
-        if random_value < self.mutation_rate ** 2:
-            random_indices = random.sample(range(len(genetic_code)), max(amount_of_mutations, 2))
-            for random_index in random_indices:
-                genetic_code[random_index] = not genetic_code[random_index]
-        elif random_value < self.mutation_rate:
-            random_indices = random.sample(range(len(genetic_code)), max(amount_of_mutations // 5, 1))
+        if random_value < self.mutation_rate:
+            random_indices = random.sample(range(len(genetic_code)), max(amount_of_mutations, 1))
             for random_index in random_indices:
                 genetic_code[random_index] = not genetic_code[random_index]
 
@@ -169,7 +166,7 @@ class GeneticAlgorithm:
     def create_generation(self, selected: list[Chromosome]):
         result: list[Chromosome] = []
 
-        for _ in range(self.generation_size // 20):
+        for _ in range((self.generation_size - self.elitism_size) // 2):
             parents = random.sample(selected, 2)
 
             child1_code, child2_code = self.crossover(parents[0], parents[1])
@@ -194,7 +191,7 @@ class GeneticAlgorithm:
         for i in range(self.max_iterations):
             selected = self.selection(population)
 
-            old_generation = (sorted(population, reverse=True))[0:(90 * self.generation_size // 100)]
+            old_generation = (sorted(population, reverse=True))[0:self.elitism_size]
             population = old_generation + self.create_generation(selected)
 
             current_best = max(population, key=lambda x: x.fitness)

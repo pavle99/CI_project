@@ -185,8 +185,6 @@ class Beam:
 
         if self.algorithm == 'POW':
             h = self.power_heuristic
-        elif self.algorithm == 'HBLUM':
-            h = self.probability_heuristic
         elif self.algorithm == 'H':
             h = self.probability_heuristic
 
