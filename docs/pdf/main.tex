@@ -138,7 +138,7 @@
     Pri prvom pristupu problemu, odlučili smo da koristimo genetski algoritam. Kod generacijskog genetskog algoritma, incijalizujemo populaciju sa nasumičnim jedinkama, biramo jedinke roditelje, od njih kreiramo jedinke decu, i sa odredjenom šansom mutiramo dobijene jedinke. Cilj je da pri svakom odabiru roditelja, jedinke sa boljom ocenom imaju veće šanse da budu odabrane. Na ovaj način pokušavamo da imitiramo evoluciju u prirodi.
 
     \subsection{Predstavljanje jedinki}
-    Pretpostavimo bez umanjenja opštosti da je sekvenca najmanje dužine na prvoj poziciji, \emph{i=1}. Tada svaku jedinku u genetskom algoritmu možemo predstaviti kao niz \emph{bulovskih} vrednosti dužine $|S_1|$. Sekvenca koju jedinka predstavlja je sastavljena od karaktera sekvence \emph{$S_1$} za koje u odgovarajućem elementu niza stoji vrednost \emph{Tačno}. Očigledno, ovakva jedinka može da predstavi sve moguće validne sekvence za naš problem.
+    Pretpostavimo bez umanjenja opštosti da je sekvenca najmanje dužine na prvoj poziciji, \emph{i=1}. Tada svaku jedinku u genetskom algoritmu možemo predstaviti kao niz \emph{bulovskih} vrednosti dužine $|S_1|$. Sekvenca koju jedinka predstavlja je sastavljena od karaktera sekvence \emph{$S_1$} uz koje u odgovarajućem elementu niza stoji vrednost \emph{Tačno}. Očigledno, ovakva jedinka može da predstavi sve moguće validne sekvence za naš problem.
 
     \subsection{Fitnes funkcija}
     Ako uzmemo prethodnu pretpostavku, za sekvence $S_1, S_2,..., S_k \in \Sigma^*$ važi $|S_1| \leq |S_i|$ za svako $i \in {2,...,k}$. Neka je $n = |S_1|$ i neka za svaku jedinku $s \in \{0,1\}^n$ \emph{c(s)} bude kandidat za rešenje koji je predstavljen jedinkom $s$, i neka \emph{k(s)} bude broj sekvenci $S_1, S_2,..., S_k$ kojima je \emph{c(s)} podsekvenca.
@@ -209,47 +209,47 @@
     Pokrenuli smo genetski algoritam da radi sa 108 različitih kombinacija parametara (generation\_size, chromosome\_size, tournament\_size, mutation\_rate, itd...) a prikazujemo rezultate GA dobijene kombinacijom parametara gorespomenutih u tekstu i uporedjujemo sa rezultatima izvršavanja brute force algoritma:
 
     \begin{center}
-        \begin{tabular}{| c c c | c c | c c |}
+        \begin{tabular}{| c c c | c c | c c | c c |}
             \hline
-            \multicolumn{3}{|c}{Params} & \multicolumn{2}{|c}{DP} & \multicolumn{2}{|c|}{GA} \\
+            \multicolumn{3}{|c}{Params} & \multicolumn{2}{|c}{DP} & \multicolumn{2}{|c|}{GA} & \multicolumn{2}{|c|}{BS-H} \\
             \hline
-            $|\Sigma|$ & $n$ & $k$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ \\
+            $|\Sigma|$ & $n$ & $k$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ \\
             \hline
-            2          & 10  & 2   & 0.01   & 7          & 0.01   & 7          \\
+            2          & 10  & 2   & 0.01   & 7          & 0.01   & 7          & 0.001  & 7          \\
             \hline
-            2          & 20  & 2   & 0.01   & 15         & 0.08   & 15         \\
+            2          & 20  & 2   & 0.01   & 15         & 0.08   & 15         & 0.001  & 15         \\
             \hline
-            2          & 10  & 3   & 0.01   & 6          & 0.01   & 6          \\
+            2          & 10  & 3   & 0.01   & 6          & 0.01   & 6          & 0.0    & 6          \\
             \hline
-            2          & 20  & 3   & 0.02   & 12         & 0.1    & 12         \\
+            2          & 20  & 3   & 0.02   & 12         & 0.1    & 12         & 0.0    & 12         \\
             \hline
-            2          & 10  & 5   & 0.7    & 5          & 0.03   & 5          \\
+            2          & 10  & 5   & 0.7    & 5          & 0.03   & 5          & 0.0    & 5          \\
             \hline
-            2          & 20  & 5   & 21.9   & 11         & 0.13   & 11         \\
+            2          & 20  & 5   & 21.9   & 11         & 0.13   & 11         & 0.001  & 11         \\
             \hline
-            4          & 10  & 2   & 0.01   & 5          & 0.03   & 5          \\
+            4          & 10  & 2   & 0.01   & 5          & 0.03   & 5          & 0.0    & 5          \\
             \hline
-            4          & 20  & 2   & 0.01   & 11         & 0.15   & 10         \\
+            4          & 20  & 2   & 0.01   & 11         & 0.15   & 10         & 0.001  & 11         \\
             \hline
-            4          & 10  & 3   & 0.01   & 4          & 0.04   & 4          \\
+            4          & 10  & 3   & 0.01   & 4          & 0.04   & 4          & 0.0    & 4          \\
             \hline
-            4          & 20  & 3   & 0.03   & 8          & 0.29   & 7          \\
+            4          & 20  & 3   & 0.03   & 8          & 0.29   & 7          & 0.001  & 8          \\
             \hline
-            4          & 10  & 5   & 0.72   & 3          & 0.02   & 3          \\
+            4          & 10  & 5   & 0.72   & 3          & 0.02   & 3          & 0.0    & 3          \\
             \hline
-            4          & 20  & 5   & 23.6   & 7          & 0.2    & 7          \\
+            4          & 20  & 5   & 23.6   & 7          & 0.2    & 7          & 0.001  & 7          \\
             \hline
-            26         & 10  & 2   & 0.01   & 2          & 0.02   & 2          \\
+            26         & 10  & 2   & 0.01   & 2          & 0.02   & 2          & 0.0    & 2          \\
             \hline
-            26         & 20  & 2   & 0.01   & 5          & 0.09   & 4          \\
+            26         & 20  & 2   & 0.01   & 5          & 0.09   & 4          & 0.001  & 5          \\
             \hline
-            26         & 10  & 3   & 0.01   & 1          & 0.01   & 1          \\
+            26         & 10  & 3   & 0.01   & 1          & 0.01   & 1          & 0.0    & 1          \\
             \hline
-            26         & 20  & 3   & 0.03   & 2          & 0.05   & 2          \\
+            26         & 20  & 3   & 0.03   & 2          & 0.05   & 2          & 0.0    & 2          \\
             \hline
-            26         & 10  & 5   & 0.73   & 0          & 0.01   & 0          \\
+            26         & 10  & 5   & 0.73   & 0          & 0.01   & 0          & 0.0    & 0          \\
             \hline
-            26         & 20  & 5   & 22.8   & 1          & 0.02   & 1          \\
+            26         & 20  & 5   & 22.8   & 1          & 0.02   & 1          & 0.001  & 1          \\
             \hline
         \end{tabular}
     \end{center}
@@ -260,59 +260,59 @@
     Pri testiranju pokazalo se da je heuristika $\textsc{Pow}$ brža, ali je zbog toga heuristika $\textsc{H}$ davala bolje rezultate. Za heuristiku $\textsc{H}$ vrednost za $k_{best}$ koja je uzeta je 50, a za $\textsc{Pow}$ je 100. Rezultate za fiksno $n=600$ smo poredili sa \cite{res}:
 
     \begin{center}
-        \begin{tabular}{| c c c | c c | c c | c c | c c |}
+        \begin{tabular}{| c c c | c c | c c | c c | c c | c c |}
             \hline
-            \multicolumn{3}{|c}{Params} & \multicolumn{2}{|c|}{BS-H} & \multicolumn{2}{|c|}{BS-Pow} & \multicolumn{2}{c|}{BS-H-Lit.} & \multicolumn{2}{c|}{BS-Pow-Lit.}\\
+            \multicolumn{3}{|c}{Params} & \multicolumn{2}{|c|}{GA} & \multicolumn{2}{|c|}{BS-H} & \multicolumn{2}{|c|}{BS-Pow} & \multicolumn{2}{c|}{BS-H-Lit.} & \multicolumn{2}{c|}{BS-Pow-Lit.}\\
             \hline
-            $|\Sigma|$ & $\beta$ & $k$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ \\
+            $|\Sigma|$ & $\beta$ & $k$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$ & $t[s]$ & $s_{best}$\\
             \hline
-            4          & 50      & 20  & 0.18   & 181        & 0.17   & 173        & 0.04   & 189        & 0.10   & 191        \\
+            4          & 50      & 20  & 2.75   & 144        & 0.18   & 181        & 0.17   & 173        & 0.04   & 189        & 0.10   & 191        \\
             \hline
-            4          & 50      & 100 & 0.21   & 149        & 0.19   & 141        & 0.05   & 158        & 0.09   & 156        \\
+            4          & 50      & 100 & 8.82   & 135        & 0.21   & 149        & 0.19   & 141        & 0.05   & 158        & 0.09   & 156        \\
             \hline
-            4          & 50      & 150 & 0.25   & 147        & 0.21   & 142        & 0.06   & 151        & 0.10   & 150        \\
+            4          & 50      & 150 & 10.79  & 131        & 0.25   & 147        & 0.21   & 142        & 0.06   & 151        & 0.10   & 150        \\
             \hline
-            4          & 50      & 200 & 0.25   & 144        & 0.24   & 140        & 0.07   & 150        & 0.11   & 148        \\
+            4          & 50      & 200 & 15.78  & 129        & 0.25   & 144        & 0.24   & 140        & 0.07   & 150        & 0.11   & 148        \\
             \hline
-            4          & 200     & 20  & 0.51   & 186        & 0.42   & 180        & 0.19   & 191        & 0.29   & 191        \\
+            4          & 200     & 20  & 2.75   & 144        & 0.51   & 186        & 0.42   & 180        & 0.19   & 191        & 0.29   & 191        \\
             \hline
-            4          & 200     & 100 & 0.60   & 155        & 0.51   & 148        & 0.36   & 158        & 0.40   & 158        \\
+            4          & 200     & 100 & 8.82   & 135        & 0.60   & 155        & 0.51   & 148        & 0.36   & 158        & 0.40   & 158        \\
             \hline
-            4          & 200     & 150 & 0.59   & 151        & 0.49   & 143        & 0.26   & 151        & 0.34   & 151        \\
+            4          & 200     & 150 & 10.79  & 131        & 0.59   & 151        & 0.49   & 143        & 0.26   & 151        & 0.34   & 151        \\
             \hline
-            4          & 200     & 200 & 0.69   & 148        & 0.51   & 139        & 0.38   & 150        & 0.38   & 150        \\
+            4          & 200     & 200 & 15.78  & 129        & 0.69   & 148        & 0.51   & 139        & 0.38   & 150        & 0.38   & 150        \\
             \hline
-            4          & 600     & 20  & 1.31   & 192        & 1.28   & 185        & 0.71   & 192        & 1.20   & 191        \\
+            4          & 600     & 20  & 2.75   & 144        & 1.31   & 192        & 1.28   & 185        & 0.71   & 192        & 1.20   & 191        \\
             \hline
-            4          & 600     & 100 & 1.32   & 157        & 1.28   & 150        & 0.68   & 158        & 1.28   & 158        \\
+            4          & 600     & 100 & 8.82   & 135        & 1.32   & 157        & 1.28   & 150        & 0.68   & 158        & 1.28   & 158        \\
             \hline
-            4          & 600     & 150 & 1.45   & 151        & 1.37   & 143        & 1.05   & 152        & 1.43   & 152        \\
+            4          & 600     & 150 & 10.79  & 131        & 1.45   & 151        & 1.37   & 143        & 1.05   & 152        & 1.43   & 152        \\
             \hline
-            4          & 600     & 200 & 1.40   & 150        & 1.29   & 148        & 1.15   & 151        & 1.00   & 150        \\
+            4          & 600     & 200 & 15.78  & 129        & 1.40   & 150        & 1.29   & 148        & 1.15   & 151        & 1.00   & 150        \\
             \hline
-            20         & 50      & 20  & 0.11   & 42         & 0.09   & 36         & 0.08   & 46         & 0.14   & 46         \\
+            20         & 50      & 20  & 2.02   & 29         & 0.11   & 42         & 0.09   & 36         & 0.08   & 46         & 0.14   & 46         \\
             \hline
-            20         & 50      & 100 & 0.19   & 29         & 0.13   & 28         & 0.08   & 31         & 0.13   & 31         \\
+            20         & 50      & 100 & 6.19   & 22         & 0.19   & 29         & 0.13   & 28         & 0.08   & 31         & 0.13   & 31         \\
             \hline
-            20         & 50      & 150 & 0.20   & 28         & 0.12   & 24         & 0.11   & 29         & 0.13   & 29         \\
+            20         & 50      & 150 & 5.81   & 22         & 0.20   & 28         & 0.12   & 24         & 0.11   & 29         & 0.13   & 29         \\
             \hline
-            20         & 50      & 200 & 0.23   & 27         & 0.22   & 24         & 0.11   & 28         & 0.13   & 27         \\
+            20         & 50      & 200 & 7.79   & 20         & 0.23   & 27         & 0.22   & 24         & 0.11   & 28         & 0.13   & 27         \\
             \hline
-            20         & 200     & 20  & 0.65   & 44         & 0.56   & 39         & 0.45   & 47         & 0.50   & 47         \\
+            20         & 200     & 20  & 2.02   & 29         & 0.65   & 44         & 0.56   & 39         & 0.45   & 47         & 0.50   & 47         \\
             \hline
-            20         & 200     & 100 & 0.67   & 32         & 0.54   & 28         & 0.31   & 31         & 0.49   & 31         \\
+            20         & 200     & 100 & 6.19   & 22         & 0.67   & 32         & 0.54   & 28         & 0.31   & 31         & 0.49   & 31         \\
             \hline
-            20         & 200     & 150 & 0.88   & 30         & 0.46   & 26         & 0.46   & 29         & 0.41   & 29         \\
+            20         & 200     & 150 & 5.81   & 22         & 0.88   & 30         & 0.46   & 26         & 0.46   & 29         & 0.41   & 29         \\
             \hline
-            20         & 200     & 200 & 0.88   & 28         & 0.50   & 25         & 0.43   & 28         & 0.47   & 27         \\
+            20         & 200     & 200 & 7.79   & 20         & 0.88   & 28         & 0.50   & 25         & 0.43   & 28         & 0.47   & 27         \\
             \hline
-            20         & 600     & 20  & 1.83   & 45         & 1.66   & 40         & 1.48   & 48         & 1.71   & 47         \\
+            20         & 600     & 20  & 2.02   & 29         & 1.83   & 45         & 1.66   & 40         & 1.48   & 48         & 1.71   & 47         \\
             \hline
-            20         & 600     & 100 & 1.88   & 31         & 1.68   & 25         & 1.20   & 31         & 1.09   & 32         \\
+            20         & 600     & 100 & 6.19   & 22         & 1.88   & 31         & 1.68   & 25         & 1.20   & 31         & 1.09   & 32         \\
             \hline
-            20         & 600     & 150 & 1.94   & 29         & 1.68   & 25         & 1.29   & 29         & 1.66   & 29         \\
+            20         & 600     & 150 & 5.81   & 22         & 1.94   & 29         & 1.68   & 25         & 1.29   & 29         & 1.66   & 29         \\
             \hline
-            20         & 600     & 200 & 2.01   & 27         & 1.70   & 23         & 1.43   & 28         & 1.62   & 28         \\
+            20         & 600     & 200 & 7.79   & 20         & 2.01   & 27         & 1.70   & 23         & 1.43   & 28         & 1.62   & 28         \\
             \hline
         \end{tabular}
     \end{center}
